@@ -310,7 +310,11 @@ export const literalProcessor: Processor<schemas.$ZodLiteral> = (schema, ctx, js
     } else if (typeof val === "bigint") {
       if (handleUnrepresentable(schema, ctx, json, params, "BigInt literals cannot be represented in JSON Schema"))
         return;
-      vals.push(Number(val));
+      // otherwise keep the member only if it survives a Number() round-trip
+      // exactly; an inexact bigint has no exact JSON number form, so
+      // approximating it would emit a schema that rejects the literal's own
+      // value and accepts a different one
+      if (BigInt(Number(val)) === val) vals.push(Number(val));
     } else {
       vals.push(val);
     }
