@@ -320,7 +320,7 @@ export const literalProcessor: Processor<schemas.$ZodLiteral> = (schema, ctx, js
     }
   }
   if (vals.length === 0) {
-    // do nothing (an undefined literal was stripped)
+    // do nothing (unrepresentable members like undefined or bigint were stripped)
   } else if (vals.length === 1) {
     const val = vals[0]!;
     json.type = val === null ? ("null" as const) : (typeof val as any);
