@@ -1935,6 +1935,46 @@ describe("toJSONSchema", () => {
     `);
   });
 
+  test("bigint literal with unrepresentable: any is dropped, not rounded", () => {
+    // https://github.com/colinhacks/zod/issues/6625
+    // a bigint has no exact JSON number form: rounding it emits a schema
+    // that rejects the literal's own value and accepts a different one
+    expect(z.toJSONSchema(z.literal(9007199254740993n), { unrepresentable: "any" })).toMatchInlineSnapshot(`
+      {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+      }
+    `);
+
+    // representable members of a mixed literal are kept
+    expect(
+      z.toJSONSchema(z.literal(["hello", 9007199254740993n, 5]), { unrepresentable: "any" })
+    ).toMatchInlineSnapshot(`
+      {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "enum": [
+          "hello",
+          5,
+        ],
+      }
+    `);
+
+    // the exact-representability boundary: 2**53 is kept, 2**53 + 1 is dropped
+    expect(
+      z.toJSONSchema(z.literal([9007199254740992n, 9007199254740993n]), { unrepresentable: "any" })
+    ).toMatchInlineSnapshot(`
+        {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "const": 9007199254740992,
+          "type": "number",
+        }
+      `);
+
+    // the default still throws
+    expect(() => z.toJSONSchema(z.literal(9007199254740993n))).toThrow(
+      "BigInt literals cannot be represented in JSON Schema"
+    );
+  });
+
   test("literal draft-4", () => {
     const a = z.literal("hello");
     expect(z.toJSONSchema(a, { target: "draft-4" })).toMatchInlineSnapshot(`
