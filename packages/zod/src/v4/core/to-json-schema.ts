@@ -50,6 +50,8 @@ export interface JSONSchemaGeneratorParams {
   /** How to handle unrepresentable types.
    * - `"throw"` — Default. Unrepresentable types throw an error
    * - `"any"` — Unrepresentable types become `{}`
+   *
+   * Bigint literal members are kept as numbers when exactly representable and dropped otherwise.
    * - A function — called once per unrepresentable schema; see {@link UnrepresentableHandler}. */
   unrepresentable?: "throw" | "any" | UnrepresentableHandler<schemas.$ZodTypes>;
   /** Arbitrary custom logic that can be used to modify the generated JSON Schema. */
