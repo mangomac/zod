@@ -408,6 +408,12 @@ const zodUtilities: ZodResource[] = [
     description: "Compact binary serialization that uses your Zod schema as the wire format. No IDL or codegen.",
     slug: "ChiChuRita/shorn",
   },
+  {
+    name: "zod-parity",
+    url: "https://github.com/mangomac/zod-parity",
+    description: "CLI that finds inputs Zod 4 and its generated JSON Schema disagree about, with counterexamples and error paths.",
+    slug: "mangomac/zod-parity",
+  },
 ];
 
 export {
